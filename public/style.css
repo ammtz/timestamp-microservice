@@ -1,10 +1,10 @@
 /****** Main Styling ******/
 
 body {
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Calibri', sans-serif;
 	font-size: 16px;
-	color: #222;
-	background-color: #FaFaFa;
+	color: #4b4949;
+	background-color: #f8f8f8;
 	text-align: center;
 	line-height: 1.4em;
 }
@@ -29,8 +29,8 @@ hr {
 code {
   font-family: monospace;
   padding: 2px;
-  color: black;
-  background-color: #fff;
+  color: rgb(255, 250, 221);
+  background-color: #4b4949;
 }
 
 ul {

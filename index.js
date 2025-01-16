@@ -1,32 +1,45 @@
 // index.js
-// where your node app starts
+// Entry point for the Node.js application
 
-// init project
-var express = require('express');
-var app = express();
+// Import modules
+const express = require('express');
+const dayjs = require('dayjs');
+const cors = require('cors');
+const app = express();
+// Enable cors
+app.use(cors({ optionsSuccessStatus: 200 })); // Handle successful preflight requests
 
-// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC 
-var cors = require('cors');
-app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
-
-// http://expressjs.com/en/starter/static-files.html
+// Serve 'public' files
 app.use(express.static('public'));
 
-// http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
+// Serve the landing page
+app.get("/", (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+// Timestamp API endpoint
+app.get('/api/:date?', (req, res) => {
+  const dateParam = req.params.date; // Get the optional date parameter
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+  // Determine the date
+  const date = !dateParam
+    ? dayjs() // No parameter, use the current date
+    : !isNaN(dateParam)
+    ? dayjs(parseInt(dateParam)) // If valid number, parse as Unix timestamp
+    : dayjs(dateParam); // Otherwise, parse as a date string
+
+  // Check if the date is valid and respond
+  date.isValid()
+    ? res.json({
+        unix: date.valueOf(), // Unix timestamp in milliseconds
+        utc: date.toISOString(), // ISO 8601 format (UTC)
+      })
+    : res.json({ error: "Invalid Date" }); // Respond with error if invalid
 });
 
 
-
-// Listen on port set in environment variable or default to 3000
-var listener = app.listen(process.env.PORT || 3000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+// Start server
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
 });
+
