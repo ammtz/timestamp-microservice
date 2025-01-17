@@ -3,15 +3,13 @@
 A simple Node.js and Express application that provides a timestamp API. The microservice can handle various date inputs and return both **Unix** and **UTC** timestamp formats.
 
 ## **Features**
-- Accepts both Unix timestamps and ISO 8601 date strings as input.
 - Handles invalid dates gracefully, returning a JSON error response.
 - Returns the current date and time if no input is provided.
-- Supports cross-origin resource sharing (CORS).
+- Supports CORS.
 
 ---
 
 ## **API Endpoints**
-
 ### **Root Endpoint**
 ```http
 GET /

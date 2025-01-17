@@ -1,45 +1,60 @@
 // index.js
-// Entry point for the Node.js application
+// Entry point for the timestamp microservice application
 
-// Import modules
-const express = require('express');
-const dayjs = require('dayjs');
-const cors = require('cors');
+// Import required modules
+import express from 'express'; // Web framework for Node.js
+import dayjs from 'dayjs'; // Date manipulation library
+import cors from 'cors'; // Middleware to enable CORS
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Simulate `__dirname` in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Initialize the Express application
 const app = express();
-// Enable cors
-app.use(cors({ optionsSuccessStatus: 200 })); // Handle successful preflight requests
 
-// Serve 'public' files
+// Enable CORS for cross-origin requests
+app.use(cors({ optionsSuccessStatus: 200 })); // Handles preflight requests successfully
+
+// Serve static files from the 'public' directory
+// These files include the landing page and other public assets
 app.use(express.static('public'));
 
-// Serve the landing page
+// Define the root route to serve the landing page
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + '/views/index.html');
+  res.sendFile(__dirname + '/views/index.html'); // Send the HTML file as the response
 });
 
-// Timestamp API endpoint
+// Define the timestamp API endpoint
+// Route: GET /api/:date?
+// The `:date?` parameter is optional and can be a date string or Unix timestamp
 app.get('/api/:date?', (req, res) => {
-  const dateParam = req.params.date; // Get the optional date parameter
+  const dateParam = req.params.date; // Extract the date parameter from the request
 
-  // Determine the date
+  // Determine the date object based on the input parameter
   const date = !dateParam
-    ? dayjs() // No parameter, use the current date
+    ? dayjs() // If no parameter is provided, use the current date
     : !isNaN(dateParam)
-    ? dayjs(parseInt(dateParam)) // If valid number, parse as Unix timestamp
-    : dayjs(dateParam); // Otherwise, parse as a date string
+    ? dayjs(parseInt(dateParam)) // If the parameter is a number, treat it as a Unix timestamp
+    : dayjs(dateParam); // Otherwise, parse it as a date string
 
-  // Check if the date is valid and respond
-  date.isValid()
-    ? res.json({
-        unix: date.valueOf(), // Unix timestamp in milliseconds
-        utc: date.toISOString(), // ISO 8601 format (UTC)
-      })
-    : res.json({ error: "Invalid Date" }); // Respond with error if invalid
+  // Check if the date is valid
+  if (date.isValid()) {
+    // If valid, respond with Unix and UTC formats
+    res.json({
+      unix: date.valueOf(), // Return the Unix timestamp in milliseconds
+      utc: date.toDate().toUTCString(), // Return the UTC date string
+    });
+  } else {
+    // If invalid, respond with an error object
+    res.json({ error: "Invalid Date" });
+  }
 });
 
-
-// Start server
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+// Start the server on port 3000
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`); // Log that the server is up and running
 });
-
